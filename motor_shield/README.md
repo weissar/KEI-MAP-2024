@@ -1,4 +1,4 @@
-# LCD_keypad shield
+# Motor shield
 
 Produktové stránky na laskakit.cz:
 * [Motor shield](https://www.laskakit.cz/arduino-4-kanalovy-motor-driver-shield-l293d/)
@@ -9,4 +9,5 @@ Produktové stránky na laskakit.cz:
 * [Snímač otáček](https://www.laskakit.cz/fotoelektricky-snimac-otacek/)
 
 Zapojení krokového motoru - viz. [zdroj](https://components101.com/motors/28byj-48-stepper-motor)
+
 ![Stepper Wiring](./28BYJ-48-Pinout-Wirings.png)
