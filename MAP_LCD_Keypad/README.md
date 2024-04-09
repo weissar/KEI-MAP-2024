@@ -2,7 +2,29 @@
 
 [Stránka produktu](https://www.laskakit.cz/arduino-1602-lcd-klavesnice-shield/) na laskakit.cz
 
-Základní vlastnosti (užitečné informace):
+## Knihovní soubory:
+* HD44780_LCD.h a HD44780_LCD.c
+  * Obsaují inicializaci a základní funkce pro použití
+  * Vhodná inicializace:
+```C++
+  if (!HD44780_init_hw() || !HD44780_init_sw())
+    while (1)
+      ;
+
+  HD44780_set_cursor(0,  1);        // zacatek 2. radku
+  HD44780_putstring("KEI/MAP");
+```
+  * Pro práci je možné využít:
+```
+  HD44780_set_cursor ... zobrazí další prvky ze sekvence duhy (interne predpocitano 32 polozek)
+  HD44780_putchar ... výpis 1 znaku na pozici kurzoru (+ automatický posun kurzoru)
+  HD44780_putstring ... výpis řetězce, zřejmě předtím potřeba použít sprintf apod.
+```
+* Na pinu PA0 připojeny přes R tlačítka, zjištění stisknutého pomocí A/D převodníku
+  * Pozor na případný vícenásobná stisk
+  * Při zpracování připravit "hranice mezi hodnotami" a při měření hledat nejbližší
+
+## Základní vlastnosti (užitečné informace pro vlastní realizaci SW přístupu):
 * Řadič displeje je kompatibilní s oblíbeným HD44780
 * Připojení 4-bitové (8-bitová data nutno posílat na poloviny - viz. DS)
 * Tlačítka jsou připojena na vstup A/D a fungují jako "dělič" = pro každé tlačítko je čtena "analogová" hodnota ... pozor, chce to testovat interval, měřená hodnota není úplně přesná/opakovatelná
