@@ -1,5 +1,10 @@
 # Motor shield
 
+## Připravená knihovna (předběžně stále ve vývoji)
+* Podporuje pouze "motor 1" a "stepper 2" (teoreticky možno provozovat najednou)
+* Bude doplněno ASAP !!
+
+## Další zdroje informací pro možný vlastní vývoj
 Produktové stránky na laskakit.cz:
 * [Motor shield](https://www.laskakit.cz/arduino-4-kanalovy-motor-driver-shield-l293d/)
 * ["žlutý" motor](https://www.laskakit.cz/tt-motor-s-prevodovkou-plastove-prevody/)
