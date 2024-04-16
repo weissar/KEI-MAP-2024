@@ -3,10 +3,10 @@
 Shield doplňuje modul o 2x uživatelské tlačítko a 1x reset (původní je zakryto PCB shieldu)
 
 ## Knihovní soubory:
-* stm_systick.h a stm_systick.c
+* **stm_systick.h** a **stm_systick.c**
   * zapouzdřuje práci se SysTickem
   * není potřeba řešit v main.c, stačí zavolat InitSystickDefault();
-* MAX7219_single.h a MAX7219_single.c
+* **MAX7219_single.h** a **MAX7219_single.c**
   * POZOR - nemíchat s MAX7219_double, ten ovládá dvojici "MAXů"
   * Vhodná inicializace:
 

@@ -1,7 +1,7 @@
 # LED Matrix 16x8 - TM1640 Controller
 
 ## Knihovní soubory:
-* TM1640_LED.h a TM1640_LED.c
+* **TM1640_LED.h** a **TM1640_LED.c**
 * Vhodná inicializace:
 ```C++
   if (!TM1640_Init())

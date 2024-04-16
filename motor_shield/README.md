@@ -1,7 +1,7 @@
 # Motor shield
 
 ## Připravená knihovna (předběžně stále ve vývoji)
-* Potřebné soubory - Shield_L293D.h a Shield_L293D.c
+* Potřebné soubory - **Shield_L293D.h** a **Shield_L293D.c**
 * **Momentálně podporuje pouze "motor 1", "stepper 2" a "servo 1" (teoreticky možno provozovat najednou)**
   * Některé PWM výstupy jsou nevhodně zkombinované pro Nucleo, zatím dále neřešeno
 * Doporučená inicializace pro motor_1

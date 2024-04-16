@@ -6,14 +6,14 @@
 * HC-SR04 modul UZ měření vzdálenosti 
 
 ## Knihovní soubory:
-* stm_systick.h a stm_systick.c
+* **stm_systick.h** a **stm_systick.c**
   * nahrazují použití SysTick v main.c
   * funkčnost využitá i v modulu obsluhy LCD
-* ILI9163C_driver.h a ILI9163C_driver.c
+* **ILI9163C_driver.h** a **ILI9163C_driver.c**
   * nízkoúrovňové funkce přístupu k LCD řadiči
   * framebuffer pro data pixelů, pomocný buffer pro kopírování do LCD
   * použití SPI s 16-bitovým přenosem a DMA pro blokový přenos
-* display_hilevel.h, display_hilevel.c, font_type.h, font_atari_8x8.h a font_atari_8x8.c, font_lcd_5x7.h a font_lcd_5x7.c
+* **display_hilevel.h**, **display_hilevel.c**, **font_type.h**, **font_atari_8x8.h** a **font_atari_8x8.c**, **font_lcd_5x7.h** a **font_lcd_5x7.c**
   * obecné funkce pro rastrovou grafiku
   * interně vyžadují jen low-level obdobu funkce PutPixel (zajištěno)
 * Vhodná inicializace:
@@ -46,7 +46,7 @@
   DISP_DrawCircle, DISP_DrawLine, DISP_FillRect ... a řada dalších kreslicích funkcí
   DISP_GotoXY, DISP_TextBackColor, DISP_WriteString ... a řada dalších funkcí pro výpis textu
 ```
-* ultrasonic_driver.h a ultrasonic_driver.c
+* **ultrasonic_driver.h** a **ultrasonic_driver.c**
   * jednoduché funkce pro měření času (vzdálenosti)
   * interně využívá časovač TIM4
   * Inicializace není potřeba, zajistí si modul automaticky při prvním použití

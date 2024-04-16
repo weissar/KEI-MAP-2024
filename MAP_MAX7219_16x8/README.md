@@ -1,7 +1,7 @@
 # LED modul 16x8 řízený dvojicí MAX7219 - červené LED
 
 ## Knihovní soubory:
-* MAX7219_double.h a MAX7219_double.c (pozor, nekombinovat s MAX..._single)
+* **MAX7219_double.h** a **MAX7219_double.c** (pozor, nekombinovat s MAX..._single)
   * Obsaují inicializaci a základní funkce pro použití
   * Vhodná inicializace:
 ```C++

@@ -3,7 +3,7 @@
 [Stránka produktu](https://www.laskakit.cz/arduino-1602-lcd-klavesnice-shield/) na laskakit.cz
 
 ## Knihovní soubory:
-* HD44780_LCD.h a HD44780_LCD.c
+* **HD44780_LCD.h** a **HD44780_LCD.c**
   * Obsaují inicializaci a základní funkce pro použití
   * Vhodná inicializace:
 ```C++
