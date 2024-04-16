@@ -29,7 +29,7 @@ Shield doplňuje modul o 2x uživatelské tlačítko a 1x reset (původní je za
 ```
   MAX7219_SendDataView ... na pozici 0..7 zapíše 8-bitovou hodnotu
   MAX7219_Send16b ... přímý zápis 16-bitové hodnoty do MAX7219 - viz. datasheet
-  to7seg ... pro snažěí výpis číslic 0..9 připravená k=odovací tabulka na 7-segmentové zobrazení 
+  to7seg ... pro snažší výpis číslic 0..9 připravená kódovací tabulka na 7-segmentové zobrazení 
 ```
 
 [Stránka produktu](https://www.laskakit.cz/led-displej-7-segmentovy--8-znaku-max7219-cerveny/) na laskakit.cz
