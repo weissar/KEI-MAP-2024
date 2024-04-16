@@ -13,7 +13,7 @@
   * nízkoúrovňové funkce přístupu k LCD řadiči
   * framebuffer pro data pixelů, pomocný buffer pro kopírování do LCD
   * použití SPI s 16-bitovým přenosem a DMA pro blokový přenos
-* display_hilevel.h, display_hilevel.c, font_type.h, font_atari_8x8.h, font_type.h a font_atari_8x8.c
+* display_hilevel.h, display_hilevel.c, font_type.h, font_atari_8x8.h a font_atari_8x8.c, font_lcd_5x7.h a font_lcd_5x7.c
   * obecné funkce pro rastrovou grafiku
   * interně vyžadují jen low-level obdobu funkce PutPixel (zajištěno)
 * Vhodná inicializace:

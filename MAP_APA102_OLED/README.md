@@ -32,7 +32,7 @@ Shield obsahuje:
 ```
 * OLED_SH1106.h a OLED_SH1106.c
   * Funkce pro low-level práci s OLED řadičem SH1106 (podobný rozšířenější SSD1305)
-* display_hilevel.h a display_hilevel.c, font_type.h a font_atari_8x8.h a font_atari_8x8.c
+* display_hilevel.h a display_hilevel.c, font_type.h, font_atari_8x8.h a font_atari_8x8.c, font_lcd_5x7.h a font_lcd_5x7.c
   * Vhodná inicializace:
 ```C++
   if (!OLED_SH1106_Init())      // inicializace

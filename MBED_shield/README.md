@@ -11,7 +11,7 @@
   * nízkoúrovňové funkce přístupu k LCD řadiči
   * framebuffer pro data pixelů, pomocný buffer pro kopírování do LCD
   * interně používá časovač TIM4 pro automatická refresh framebuffer -> LCD, přenos přes DMA
-* display_hilevel.h, display_hilevel.c, font_type.h, font_atari_8x8.h, font_type.h a font_atari_8x8.c
+* display_hilevel.h, display_hilevel.c, font_type.h, font_atari_8x8.h a font_atari_8x8.c, font_lcd_5x7.h a font_lcd_5x7.c
   * obecné funkce pro rastrovou grafiku
   * interně vyžadují jen low-level obdobu funkce PutPixel (zajištěno) v inicializaci ST7565
 * Vhodná inicializace:
