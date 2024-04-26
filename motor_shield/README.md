@@ -1,6 +1,9 @@
 # Motor shield
 
 ## Připravená knihovna (předběžně stále ve vývoji)
+* **stm_core_addon.h** a **stm_core_addon.c**
+  * rozšíření z "běžného" stm_core o funkce pro zjištění busclock a timerclock
+  * interně používané při inicializaci časovačů
 * Potřebné soubory - **Shield_L293D.h** a **Shield_L293D.c**
 * **Momentálně podporuje pouze "motor 1", "stepper 2" a "servo 1" (teoreticky možno provozovat najednou)**
   * Některé PWM výstupy jsou nevhodně zkombinované pro Nucleo, zatím dále neřešeno

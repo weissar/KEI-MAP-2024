@@ -9,6 +9,9 @@
 * **stm_systick.h** a **stm_systick.c**
   * nahrazují použití SysTick v main.c
   * funkčnost využitá i v modulu obsluhy LCD
+* **stm_core_addon.h** a **stm_core_addon.c**
+  * rozšíření z "běžného" stm_core o funkce pro zjištění busclock a timerclock
+  * interně používané při inicializaci LCD
 * **ILI9163C_driver.h** a **ILI9163C_driver.c**
   * nízkoúrovňové funkce přístupu k LCD řadiči
   * framebuffer pro data pixelů, pomocný buffer pro kopírování do LCD

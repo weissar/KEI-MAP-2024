@@ -45,6 +45,8 @@ Shield obsahuje:
 
   DISP_SetFont(font_atari_8x8); // vzchoyi font
   DISP_SetFontMultiply(1);      // a faktor zvetseni fontu
+
+  OLED_SH1106_UpdateContent();  // aktualizuje displej podle obsahu FB
 ```
   * Pro práci je možné využít:
 ```
