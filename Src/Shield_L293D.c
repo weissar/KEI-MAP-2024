@@ -232,8 +232,12 @@ bool motors_servo_enable(int servo)
 
       _servo1_enabled = true;
       break;
-    case 2:                 // collision with motors - uses TIM3
+    case 2:
+      if (_motor1_enabled || _motor3_enabled)   // share TIM3
+        return false;
+
       //TODO generate pulses manually via Timer-interrupt
+      return false;         // eg. not implepmented
     default:
       return false;
   }
@@ -275,10 +279,104 @@ bool motors_servo_usec(int servo, uint32_t width_usec)
 }
 
 /**
+ * \fn bool _setTimerPWM(int, int, uint32_t)
+ * \brief Internally sets TIMx for PWM generation
+ *
+ * \param timerNum Which timer - only 2, 3 and 4 is valid
+ * \param channel Which channel 1..4
+ * \param pwm_freq Required frequency, PSC/ARR calculated from ABPx clock
+ * \return
+ */
+static bool _setTimerPWM(int timerNum, int channel, uint32_t pwm_freq)
+{
+  TIM_TypeDef *TIMx = 0;
+  uint32_t maskEnr = 0, maskRst = 0;
+  switch(timerNum)
+  {
+    case 2:
+      TIMx = TIM2;
+      maskEnr = RCC_APB1ENR_TIM2EN;
+      maskRst = RCC_APB1RSTR_TIM2RST;
+      break;
+    case 3:
+      TIMx = TIM3;
+      maskEnr = RCC_APB1ENR_TIM3EN;
+      maskRst = RCC_APB1RSTR_TIM3RST;
+      break;
+    case 4:
+      TIMx = TIM4;
+      maskEnr = RCC_APB1ENR_TIM4EN;
+      maskRst = RCC_APB1RSTR_TIM4RST;
+      break;
+    default:
+      return false;
+  }
+
+  if ((maskEnr == 0) || (maskRst == 0))
+    return false;
+
+  //TODO select APB1 or APB2 timersa
+  if (!(RCC->APB1ENR & maskEnr))
+  {
+    RCC->APB1ENR |= maskEnr;
+    RCC->APB1RSTR |= maskRst;
+    RCC->APB1RSTR &= ~maskRst;
+  }
+
+  TIMx->CR1 = 0                  // count UP & stop
+    // ARR not buffered ...  | TIM_CR1_ARPE;
+    // there was problem on TIM2 - is 32b CNT !!
+    ;
+  TIMx->CR2 = 0;
+
+  uint32_t apbClock = STM_GetTimerClock(timerNum);
+
+  TIMx->PSC = apbClock / pwm_freq - 1;
+  TIMx->ARR = 100 - 1;           // 100 steps
+
+  TIMx->CR1 |= TIM_CR1_CEN;
+
+  switch(channel)
+  {
+    case 1:
+      TIMx->CCMR1 &= ~TIM_CCMR1_OC1M;
+      TIMx->CCMR1 |= TIM_CCMR1_OC1M_1 | TIM_CCMR1_OC1M_2;
+
+      TIMx->CCER |= TIM_CCER_CC1E;
+      TIMx->CCR1 = 0;               // nothing
+      break;
+    case 2:
+      TIMx->CCMR1 &= ~TIM_CCMR1_OC2M;
+      TIMx->CCMR1 |= TIM_CCMR1_OC2M_1 | TIM_CCMR1_OC2M_2;
+
+      TIMx->CCER |= TIM_CCER_CC2E;
+      TIMx->CCR2 = 0;
+      break;
+    case 3:
+      TIMx->CCMR2 &= ~TIM_CCMR2_OC3M;
+      TIMx->CCMR2 |= TIM_CCMR2_OC3M_1 | TIM_CCMR2_OC3M_2;
+
+      TIMx->CCER |= TIM_CCER_CC3E;
+      TIMx->CCR3 = 0;
+      break;
+    case 4:
+      TIMx->CCMR2 &= ~TIM_CCMR2_OC4M;
+      TIMx->CCMR2 |= TIM_CCMR2_OC4M_1 | TIM_CCMR2_OC4M_2;
+
+      TIMx->CCER |= TIM_CCER_CC4E;
+      TIMx->CCR4 = 0;
+      break;
+  }
+
+  //TODO special settings for TIM1
+
+  return true;
+}
+
+/**
  * \fn bool motors_motor_enable(int, uint32_t)
  * \brief Enable motor, set PWM generation with frequency
- * \remark In this moment valid only "motor 1"
- * \remark Motor 1 - TIM3 CH2, PWM in 100 steps
+ * \remark PWM in 100 steps
  *
  * \param motor Motor 1..4
  * \param pwm_freq Required PWM frequency
@@ -292,7 +390,7 @@ bool motors_motor_enable(int motor, uint32_t pwm_freq)
   switch(motor)
   {
     case 1:
-      if (_stepper1_enabled)
+      if (_stepper1_enabled || _servo2_enabled)   // same pins or TIM3
         return false;
 
       _motor_595_set_motor(1, false, false);      // OFF
@@ -301,35 +399,42 @@ bool motors_motor_enable(int motor, uint32_t pwm_freq)
       STM_SetPinGPIO(GPIOA, 7, ioPortAlternatePP);
       STM_SetAFGPIO(GPIOA, 7, 2);
 
-      {
-        if (!(RCC->APB1ENR & RCC_APB1ENR_TIM3EN))
-        {
-          RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;
-          RCC->APB1RSTR |= RCC_APB1RSTR_TIM3RST;
-          RCC->APB1RSTR &= ~RCC_APB1RSTR_TIM3RST;
-        }
+      _motor1_enabled = _setTimerPWM(3, 2, pwm_freq);
+      return _motor1_enabled;
+    case 2:
+      if (_stepper1_enabled)                      // same pins
+        return false;
 
-        TIM3->CR1 = 0;                  // count UP
-        TIM3->CR1 |= TIM_CR1_ARPE;
-        TIM3->CR2 = 0;
+      _motor_595_set_motor(2, false, false);      // OFF
+      _motor_595_send();
 
-        uint32_t apb1 = STM_GetTimerClock(3);
+      STM_SetPinGPIO(GPIOB, 3, ioPortAlternatePP);
+      STM_SetAFGPIO(GPIOB, 3, 1);
 
-        TIM3->PSC = apb1 / pwm_freq - 1;
-        TIM3->ARR = 100 - 1;           // 100 steps
+      _motor2_enabled = _setTimerPWM(2, 2, pwm_freq);
+      return _motor2_enabled;
+    case 3:
+      if (_stepper2_enabled || _servo2_enabled)   // same pins or TIM3
+        return false;
 
-        TIM3->CR1 |= TIM_CR1_CEN;
+      _motor_595_set_motor(3, false, false);      // OFF
+      _motor_595_send();
 
-        TIM3->CCMR1 &= ~TIM_CCMR1_OC2M;
-        TIM3->CCMR1 |= TIM_CCMR1_OC2M_1 | TIM_CCMR1_OC2M_2;
+      STM_SetPinGPIO(GPIOB, 4, ioPortAlternatePP);
+      STM_SetAFGPIO(GPIOB, 4, 2);
 
-        TIM3->CCER |= TIM_CCER_CC2E;
-        TIM3->CCR2 = 0;               // nothing
-      }
+      return true == (_motor3_enabled = _setTimerPWM(3, 1, pwm_freq));
+    case 4:
+      if (_stepper2_enabled)              // same pins
+        return false;
 
-      _motor1_enabled = true;
-      return true;
-    //TODO other motors
+      _motor_595_set_motor(4, false, false);      // OFF
+      _motor_595_send();
+
+      STM_SetPinGPIO(GPIOB, 10, ioPortAlternatePP);
+      STM_SetAFGPIO(GPIOB, 10, 1);
+
+      return true == (_motor4_enabled = _setTimerPWM(2, 3, pwm_freq));
     default:
       return false;
   }
@@ -347,18 +452,50 @@ bool motors_motor_enable(int motor, uint32_t pwm_freq)
  */
 bool motors_motor_run(int motor, uint32_t width_perc, bool direction)
 {
-  if (!_motor1_enabled)
-    return false;
-
-  TIM3->CCR2 = 0;         // temporary stop
-
-  _motor_595_set_motor(1, direction, !direction);      // real directions must be checked
-  _motor_595_send();
-
   if (width_perc > 100)
     width_perc = 100;
 
-  TIM3->CCR2 = width_perc;
+  volatile uint32_t *ptrCCRx = 0;
+
+  switch(motor)
+  {
+    case 1:
+      if (!_motor1_enabled)
+        return false;
+
+      ptrCCRx = &(TIM3->CCR2);
+      break;
+    case 2:
+      if (!_motor2_enabled)
+        return false;
+
+      ptrCCRx = &(TIM2->CCR2);
+      break;
+    case 3:
+      if (!_motor3_enabled)
+        return false;
+
+      ptrCCRx = &(TIM3->CCR1);
+      break;
+    case 4:
+      if (!_motor4_enabled)
+        return false;
+
+      ptrCCRx = &(TIM2->CCR3);
+      break;
+    default:
+      return false;
+  }
+
+  if (!ptrCCRx)             // not set ?
+    return false;           // fail
+
+  *ptrCCRx = 0;             // temporary stop
+
+  _motor_595_set_motor(motor, direction, !direction);      // real directions must be checked
+  _motor_595_send();
+
+  *ptrCCRx = width_perc;
 
   return true;
 }
@@ -389,7 +526,12 @@ bool motors_stepper_enable(int stepper)
 
       _stepper2_enabled = true;
       break;
-    case 1:       // not used now
+    case 1:
+      if (_motor3_enabled || _motor4_enabled)     // pin/connector collision
+        return false;
+
+      //TODO add pin init
+      return false;         // now not implemented
     default:
       return false;
   }

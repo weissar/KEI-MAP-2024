@@ -4,23 +4,23 @@
 * **stm_core_addon.h** a **stm_core_addon.c**
   * rozšíření z "běžného" stm_core o funkce pro zjištění busclock a timerclock
   * interně používané při inicializaci časovačů
-* Potřebné soubory - **Shield_L293D.h** a **Shield_L293D.c**
-* **Momentálně podporuje pouze "motor 1", "stepper 2" a "servo 1" (teoreticky možno provozovat najednou)**
+* Hlavní soubory k shieldu - **Shield_L293D.h** a **Shield_L293D.c**
+* **Momentálně podporuje pouze "stepper 2" a "servo 1" (teoreticky možno provozovat najednou)**
+* **Nová verze - podporuje motory 1-4, neměla by dovolit kolizi mezi např. motory a "krokáčem"**
   * Některé PWM výstupy jsou nevhodně zkombinované pro Nucleo, zatím dále neřešeno
-* Doporučená inicializace pro motor_1
+* Doporučená inicializace pro motor (1..4)
 ```C++
-#define MOTOR_ID    1
 ...
-  if (!motors_motor_enable(MOTOR_ID, 1500))    // 1.5kHz PWM
+  if (!motors_motor_enable(1, 1500))    // 1.5kHz PWM
   {
-    puts("Fail init motor");
+    puts("Fail init motor 1");
     while (1)
       ;
   }
 ```
-* Nastavení rychlosti v rozsahu 0-100 (dle inicializace PWM) a směru otáčení:
+* Nastavení rychlosti v rozsahu 0-100 (dle inicializace PWM) a směru otáčení pro zvolený motor:
 ```C++
-    if (!motors_motor_run(MOTOR_ID, speed, dir1))
+    if (!motors_motor_run(2, speed, dir1))
       puts("Set motor speed");
     else
       printf("Motor speed: %d\n", speed);
