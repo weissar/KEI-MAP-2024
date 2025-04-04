@@ -9,7 +9,7 @@ void HT1621_WriteDigitData(uint8_t posDigit, uint8_t data);
 
 bool HT1621_WriteDigitChar(uint8_t posDigit, char c);
 void HT1621_WriteDigitNum(uint8_t posDigit, uint8_t data);
-bool HT1621_WriteDigitChar(uint64_t posDigit, char c);
+bool HT1621_WriteDigitChar(uint8_t posDigit, char c);
 bool HT1621_SetHiBit(uint8_t posBit, bool set);
 void HT1621_Backlight(bool on);
 

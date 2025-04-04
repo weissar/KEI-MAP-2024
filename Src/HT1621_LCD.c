@@ -183,7 +183,7 @@ const static CharBytePair _decoderChar[] =
  * \param c - ASCII code of character to show
  * \return True if character found in definition table
  */
-bool HT1621_WriteDigitChar(uint64_t posDigit, char c)
+bool HT1621_WriteDigitChar(uint8_t posDigit, char c)
 {
   if ((c >= '0') && (c <= '9'))
   {
