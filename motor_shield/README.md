@@ -1,6 +1,9 @@
 # Motor shield
 
 ## Připravená knihovna (předběžně stále ve vývoji)
+
+### Práce s DC motory
+
 * **stm_core_addon.h** a **stm_core_addon.c**
   * rozšíření z "běžného" stm_core o funkce pro zjištění busclock a timerclock
   * interně používané při inicializaci časovačů
@@ -50,6 +53,31 @@
 * Nejjednodušší připojení motoru 1:
 ![Motor 1](./motorr_1_to_shield.jpg)
 
+### Práce s krokovým motorem
+* Nastavení pinů/signálů - !! POZOR, jen servo 2, tj. M3A+B a M4A+B
+```C++
+...
+  if (!motors_stepper_enable(2))    //!! only stepper 2
+  {
+    puts("Fail init stepper 2");
+    while (1)
+      ;
+  }
+```
+* Nastevení kombinace výstupů - 4 bity odpovídají 4 "koncům cívek"
+```C++
+...
+  if (!motors_stepper_set_bits(2, 0x08))    // stepper 2, bits to output 1000
+  {
+    puts("Fail set outputs to stepper");
+  }
+```
+
+* Signály/vývody krokového motoru - viz. [zdroj](https://components101.com/motors/28byj-48-stepper-motor) - upraveno pro "stepper 2"
+![Stepper Wiring](./28BYJ-48-Pinout-Wirings.png)
+* Příklad zapojení - střed cívek zapojen na GND:
+![Stepper real example](./stepmotor_to_shield.jpg)
+
 ## Další zdroje informací pro možný vlastní vývoj
 Produktové stránky na laskakit.cz:
 * [Motor shield](https://www.laskakit.cz/arduino-4-kanalovy-motor-driver-shield-l293d/)
@@ -58,7 +86,3 @@ Produktové stránky na laskakit.cz:
 * [Mikroservo kontinuální](https://www.laskakit.cz/plastove-micro-servo-sg90-9g--kontinualni/)
 * [Mikroservo](https://www.laskakit.cz/plastove-micro-servo-sg90-9g--180/)
 * [Snímač otáček](https://www.laskakit.cz/fotoelektricky-snimac-otacek/)
-
-Zapojení krokového motoru - viz. [zdroj](https://components101.com/motors/28byj-48-stepper-motor)
-
-![Stepper Wiring](./28BYJ-48-Pinout-Wirings.png)

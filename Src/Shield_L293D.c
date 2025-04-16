@@ -127,18 +127,18 @@ static bool _motor_595_set_stepper(int stepper_id, uint8_t nibble)
   switch(stepper_id)
   {
     case 2:
-      _m_595_value &= ~(0x01u | 0x08u | 0x02u | 0x01u);
+      _m_595_value &= ~(0x01u | 0x40u | 0x20u | 0x80u);
       if (nibble & 0x01) _m_595_value |= 0x01u;     // m3a
       if (nibble & 0x02) _m_595_value |= 0x40u;     // m3b
       if (nibble & 0x04) _m_595_value |= 0x20u;     // m4a
       if (nibble & 0x08) _m_595_value |= 0x80u;     // m4b
       break;
     case 1:
-      _m_595_value &= ~(0x04u | 0x40u | 0x20u | 0x80u);
+      _m_595_value &= ~(0x04u | 0x08u | 0x02u | 0x10u);
       if (nibble & 0x01) _m_595_value |= 0x04u;     // m1a
       if (nibble & 0x02) _m_595_value |= 0x08u;     // m1b
       if (nibble & 0x04) _m_595_value |= 0x02u;     // m2a
-      if (nibble & 0x08) _m_595_value |= 0x01u;     // m2b
+      if (nibble & 0x08) _m_595_value |= 0x10u;     // m2b
       break;
     default:
       return false;
@@ -563,3 +563,4 @@ bool motors_stepper_set_bits(int stepper, uint8_t nibble)
       return false;
   }
 }
+
