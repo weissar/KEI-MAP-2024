@@ -29,6 +29,15 @@
 #include "Shield_L293D.h"
 
 /**
+ * \brief GPIO for driver control signals, PWM for motors, logic for stepper
+ *
+ */
+#define MOTORS_GPIO_MOTOR_1    GPIOA,7
+#define MOTORS_GPIO_MOTOR_2    GPIOB,3
+#define MOTORS_GPIO_MOTOR_3    GPIOB,4
+#define MOTORS_GPIO_MOTOR_4    GPIOB,10
+
+/**
  * \brief Control of '595 shift register
  *
  */
@@ -122,8 +131,9 @@ static bool _motor_595_set_stepper(int stepper_id, uint8_t nibble)
   if (!_m_595_ready)
     _motor_595_init_pins();
 
-  nibble &= 0x0f;                 // for safe ...
+  nibble &= 0x0f;                 // for safe isolate lower nibble
 
+#if 0          // bit-stuffing old-style
   switch(stepper_id)
   {
     case 2:
@@ -143,6 +153,55 @@ static bool _motor_595_set_stepper(int stepper_id, uint8_t nibble)
     default:
       return false;
   }
+#else
+  switch(stepper_id)
+  {
+    case 2:
+      if (nibble & 0x01)                        // m3a on QA
+        _m_595_value |= (1 << 0);
+      else
+        _m_595_value &= ~(1 << 0);
+
+      if (nibble & 0x02)                        // m3b on QG
+        _m_595_value |= (1 << 6);
+      else
+        _m_595_value &= ~(1 << 6);
+
+      if (nibble & 0x04)                        // m4a on QF
+        _m_595_value |= (1 << 5);
+      else
+        _m_595_value &= ~(1 << 5);
+
+      if (nibble & 0x08)                        // m4b on QH
+        _m_595_value |= (1 << 7);
+      else
+        _m_595_value &= ~(1 << 7);
+      break;
+    case 1:
+      if (nibble & 0x01)                        // m1a on QC
+        _m_595_value |= (1 << 2);
+      else
+        _m_595_value &= ~(1 << 2);
+
+      if (nibble & 0x02)                        // m1b on QD
+        _m_595_value |= (1 << 3);
+      else
+        _m_595_value &= ~(1 << 3);
+
+      if (nibble & 0x04)                        // m2a on QB
+        _m_595_value |= (1 << 1);
+      else
+        _m_595_value &= ~(1 << 1);
+
+      if (nibble & 0x08)                        // m2b on QE
+        _m_595_value |= (1 << 4);
+      else
+        _m_595_value &= ~(1 << 4);
+      break;
+    default:
+      return false;
+  }
+#endif
 
   return true;
 }
@@ -396,8 +455,8 @@ bool motors_motor_enable(int motor, uint32_t pwm_freq)
       _motor_595_set_motor(1, false, false);      // OFF
       _motor_595_send();
 
-      STM_SetPinGPIO(GPIOA, 7, ioPortAlternatePP);
-      STM_SetAFGPIO(GPIOA, 7, 2);
+      STM_SetPinGPIO(MOTORS_GPIO_MOTOR_1, ioPortAlternatePP);
+      STM_SetAFGPIO(MOTORS_GPIO_MOTOR_1, 2);
 
       _motor1_enabled = _setTimerPWM(3, 2, pwm_freq);
       return _motor1_enabled;
@@ -408,8 +467,8 @@ bool motors_motor_enable(int motor, uint32_t pwm_freq)
       _motor_595_set_motor(2, false, false);      // OFF
       _motor_595_send();
 
-      STM_SetPinGPIO(GPIOB, 3, ioPortAlternatePP);
-      STM_SetAFGPIO(GPIOB, 3, 1);
+      STM_SetPinGPIO(MOTORS_GPIO_MOTOR_2, ioPortAlternatePP);
+      STM_SetAFGPIO(MOTORS_GPIO_MOTOR_2, 1);
 
       _motor2_enabled = _setTimerPWM(2, 2, pwm_freq);
       return _motor2_enabled;
@@ -420,8 +479,8 @@ bool motors_motor_enable(int motor, uint32_t pwm_freq)
       _motor_595_set_motor(3, false, false);      // OFF
       _motor_595_send();
 
-      STM_SetPinGPIO(GPIOB, 4, ioPortAlternatePP);
-      STM_SetAFGPIO(GPIOB, 4, 2);
+      STM_SetPinGPIO(MOTORS_GPIO_MOTOR_3, ioPortAlternatePP);
+      STM_SetAFGPIO(MOTORS_GPIO_MOTOR_3, 2);
 
       return true == (_motor3_enabled = _setTimerPWM(3, 1, pwm_freq));
     case 4:
@@ -431,8 +490,8 @@ bool motors_motor_enable(int motor, uint32_t pwm_freq)
       _motor_595_set_motor(4, false, false);      // OFF
       _motor_595_send();
 
-      STM_SetPinGPIO(GPIOB, 10, ioPortAlternatePP);
-      STM_SetAFGPIO(GPIOB, 10, 1);
+      STM_SetPinGPIO(MOTORS_GPIO_MOTOR_4, ioPortAlternatePP);
+      STM_SetAFGPIO(MOTORS_GPIO_MOTOR_4, 1);
 
       return true == (_motor4_enabled = _setTimerPWM(2, 3, pwm_freq));
     default:
@@ -519,10 +578,10 @@ bool motors_stepper_enable(int stepper)
       _motor_595_set_stepper(2, 0x00);      // OFF
       _motor_595_send();
 
-      STM_SetPinGPIO(GPIOB, 4, ioPortOutputPP);     // motor 3 en
-      GPIOWrite(GPIOB, 4, 1);               // activate
-      STM_SetPinGPIO(GPIOB, 10, ioPortOutputPP);    // motor 4 en
-      GPIOWrite(GPIOB, 10, 1);              // activate
+      STM_SetPinGPIO(MOTORS_GPIO_MOTOR_3, ioPortOutputPP);     // motor 3 en
+      GPIOWrite(MOTORS_GPIO_MOTOR_3, 1);               // activate
+      STM_SetPinGPIO(MOTORS_GPIO_MOTOR_4, ioPortOutputPP);    // motor 4 en
+      GPIOWrite(MOTORS_GPIO_MOTOR_4, 1);              // activate
 
       _stepper2_enabled = true;
       break;
